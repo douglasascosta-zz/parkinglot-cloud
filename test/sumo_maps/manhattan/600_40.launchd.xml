@@ -1,0 +1,10 @@
+  <launch>
+   <basedir path="../SUMO-Manhattan-1km_x_1km/">
+   </basedir>
+   <copy file="network.net.xml">
+   </copy>
+   <copy file="600_40.rou.xml">
+   </copy>
+   <copy file="600_40.sumo.cfg" type="config">
+   </copy>
+  </launch>
