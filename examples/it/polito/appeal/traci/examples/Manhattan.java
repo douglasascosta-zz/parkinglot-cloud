@@ -1,36 +1,46 @@
 package it.polito.appeal.traci.examples;
 
+import it.polito.appeal.traci.StepAdvanceListener;
 import it.polito.appeal.traci.SumoTraciConnection;
-import it.polito.appeal.traci.Vehicle;
-
-import java.util.Collection;
 
 public class Manhattan {
 
 	/** main method */
 	public static void main(String[] args) {
-		SumoTraciConnection conn = new SumoTraciConnection(
-				"test/sumo_maps/manhattan/600_49.sumo.cfg",  // config file
-				12345                                  // random seed
-				);
+		
+		// define caminho do sumo instalado
+		System.setProperty(SumoTraciConnection.SUMO_EXE_PROPERTY, "/home/douglas/sumo-0.24.0/bin/sumo");
+		
+		SumoTraciConnection conn = new SumoTraciConnection("test/sumo_maps/manhattan/600_49.sumo.cfg", // config
+																										// file
+				12345 // random seed
+		);
 		try {
 			conn.runServer();
-			
-			// the first two steps of this simulation have no vehicles.
-			conn.nextSimStep();
-			conn.nextSimStep();
-			
-			Collection<Vehicle> vehicles = conn.getVehicleRepository().getAll().values();
 
-			Vehicle aVehicle = vehicles.iterator().next();
+			conn.addStepAdvanceListener(new StepAdvanceListener() {
+
+				@Override
+				public void nextStep(double step) {
+					System.out.println(step);
+//					System.out.println(conn.getVehicleRepository().getAll().values().size());
+				}
+			});
+
+			conn.addOption("--begin", "10");
+			conn.addOption("--end", "10000");
+			conn.addOption("--step-length", "1000");
 			
-			System.out.println("Vehicle " + aVehicle
-					+ " will traverse these edges: "
-					+ aVehicle.getCurrentRoute());
-			
+			try {
+				while (true) {
+					conn.nextSimStep();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			conn.close();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
