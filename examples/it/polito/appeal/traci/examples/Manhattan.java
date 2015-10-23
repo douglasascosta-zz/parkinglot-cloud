@@ -1,47 +1,85 @@
 package it.polito.appeal.traci.examples;
 
+import java.io.IOException;
+
 import it.polito.appeal.traci.StepAdvanceListener;
 import it.polito.appeal.traci.SumoTraciConnection;
+import it.polito.appeal.traci.Vehicle;
+import it.polito.appeal.traci.VehicleLifecycleObserver;
 
 public class Manhattan {
 
-	/** main method */
-	public static void main(String[] args) {
-		
+	/**
+	 * main method
+	 * 
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException, InterruptedException {
+
 		// define caminho do sumo instalado
 		System.setProperty(SumoTraciConnection.SUMO_EXE_PROPERTY, "/home/douglas/sumo-0.24.0/bin/sumo");
-		
-		SumoTraciConnection conn = new SumoTraciConnection("test/sumo_maps/manhattan/600_49.sumo.cfg", // config
-																										// file
-				12345 // random seed
-		);
+
+		final SumoTraciConnection conn = new SumoTraciConnection("test/sumo_maps/manhattan/1_0.sumo.cfg", 12345);
+
+		final int STEPS = 111;
+
 		try {
-			conn.runServer();
+			conn.runServer(true);
+			
+			conn.addOption("--additional-files", "test/sumo_maps/manhattan/pois.xml");
+
+			conn.addVehicleLifecycleObserver(new VehicleLifecycleObserver() {
+
+				@Override
+				public void vehicleTeleportStarting(Vehicle vehicle) {
+					System.out.println("teleport");
+				}
+
+				@Override
+				public void vehicleTeleportEnding(Vehicle vehicle) {
+					System.out.println("Teleport end");
+				}
+
+				@Override
+				public void vehicleDeparted(Vehicle vehicle) {
+					try {
+						System.out.println("Vehicle " + vehicle.getID() + " started from "
+								+ vehicle.getPosition().getX() + "," + vehicle.getPosition().getY());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				@Override
+				public void vehicleArrived(Vehicle vehicle) {
+					System.out.println("Vehicle " + vehicle.getID() + " arrived");
+				}
+			});
 
 			conn.addStepAdvanceListener(new StepAdvanceListener() {
 
 				@Override
 				public void nextStep(double step) {
-					System.out.println(step);
-//					System.out.println(conn.getVehicleRepository().getAll().values().size());
+
 				}
 			});
 
-			conn.addOption("--begin", "10");
-			conn.addOption("--end", "10000");
-			conn.addOption("--step-length", "1000");
-			
-			try {
-				while (true) {
-					conn.nextSimStep();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			for (int i = 0; i < STEPS; i++) {
+				conn.nextSimStep();
+
+				Vehicle vehicle = conn.getVehicleRepository().getByID("0");
+				System.out.println("Step " + conn.getCurrentSimTime() / 1000 + ", vehicle " + vehicle.getID() + ": "
+						+ vehicle.getPosition().getX() + "," + vehicle.getPosition().getY());
 			}
 
-			conn.close();
+			conn.nextSimStep();
+
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (!conn.isClosed())
+				conn.close();
 		}
 	}
 }

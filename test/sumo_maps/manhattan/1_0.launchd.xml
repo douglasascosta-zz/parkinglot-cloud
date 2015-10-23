@@ -1,0 +1,10 @@
+  <launch>
+   <basedir path="../manhattan/">
+   </basedir>
+   <copy file="network.net.xml">
+   </copy>
+   <copy file="1_0.rou.xml">
+   </copy>
+   <copy file="1_0.sumo.cfg" type="config">
+   </copy>
+  </launch>

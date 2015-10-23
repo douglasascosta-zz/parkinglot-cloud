@@ -35,6 +35,10 @@ public class TcpNoDelayControl {
 
 	/** main method */
 	public static void main(String[] args) {
+		
+		// define caminho do sumo instalado
+		System.setProperty(SumoTraciConnection.SUMO_EXE_PROPERTY, "/home/douglas/sumo-0.24.0/bin/sumo");
+		
 		SumoTraciConnection conn = new SumoTraciConnection(
 				"test/sumo_maps/box1l/test.sumo.cfg", // config file
 				12345 // random seed

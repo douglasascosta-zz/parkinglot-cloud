@@ -1,0 +1,31 @@
+<!-- generated on Fri Oct 17 14:27:24 2014 by SUMO duarouter Version 0.17.0
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.sf.net/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="network.net.xml"/>
+        <trip-files value="trips.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="200_0.rou.xml"/>
+    </output>
+
+    <processing>
+        <ignore-errors value="true"/>
+    </processing>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="200.0"/>
+    </time>
+
+</configuration>
+-->
+  <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nonamespaceschemalocation="http://sumo.sf.net/xsd/routes_file.xsd">
+   <vehicle depart="0.00" id="0">
+    <route edges="1/4to1/3 1/3to1/2 1/2to2/2 2/2to3/2 3/2to4/2 4/2to5/2 5/2to6/2 6/2to7/2 7/2to8/2 8/2to9/2 9/2to9/3 9/3to8/3">
+    </route>
+   </vehicle>
+  </routes>
