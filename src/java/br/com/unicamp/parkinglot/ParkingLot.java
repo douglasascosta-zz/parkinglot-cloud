@@ -1,5 +1,7 @@
 package br.com.unicamp.parkinglot;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Random;
 
 public class ParkingLot {
@@ -15,8 +17,19 @@ public class ParkingLot {
 			}
 		}
 		Random rdm = new Random();
-		int places = rdm.nextInt(max);
-		System.out.println(places);
+		int vagas = rdm.nextInt(max);
+		
+		
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("vagas.txt");
+			writer.println(vagas);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println(vagas);
 	}
 
 }

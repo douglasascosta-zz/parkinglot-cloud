@@ -1,4 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <additional>
-	<poi id="0" x="300" y="200" color="1,0,0"/>
+	<poi id="0" lane=":8/8_0_0" pos="0"/>
+	<poi id="1" lane=":4/7_0_0" pos="0"/>
+	<poi id="2" lane=":9/7_0_0" pos="0"/>
+	<poi id="3" lane=":8/1_0_0" pos="0"/>
+	<poi id="4" lane=":3/0_0_0" pos="0"/>
+	<poi id="5" lane=":4/4_0_0" pos="0"/>
+	<poi id="6" lane=":0/4_0_0" pos="0"/>
+	<poi id="7" lane=":2/8_0_0" pos="0"/>
+	<poi id="8" lane=":6/7_0_0" pos="0"/>
+	<poi id="9" lane=":3/6_0_0" pos="0"/>
+	<poi id="10" lane=":3/9_0_0" pos="0"/>
+	<poi id="11" lane=":8/2_0_0" pos="0"/>
+	<poi id="12" lane=":7/0_0_0" pos="0"/>
+	<poi id="13" lane=":8/3_0_0" pos="0"/>
+	<poi id="14" lane=":1/6_0_0" pos="0"/>
+	<poi id="15" lane=":4/2_0_0" pos="0"/>
+	<poi id="16" lane=":6/3_0_0" pos="0"/>
+	<poi id="17" lane=":4/0_0_0" pos="0"/>
+	<poi id="18" lane=":4/8_0_0" pos="0"/>
+	<poi id="19" lane=":4/6_0_0" pos="0"/>
+	<poi id="20" lane=":2/2_0_0" pos="0"/>
+	<poi id="21" lane=":4/8_0_0" pos="0"/>
+	<poi id="22" lane=":5/7_0_0" pos="0"/>
+	<poi id="23" lane=":5/8_0_0" pos="0"/>
+	<poi id="24" lane=":7/9_0_0" pos="0"/>
+	<poi id="25" lane=":1/6_0_0" pos="0"/>
+	<poi id="26" lane=":7/6_0_0" pos="0"/>
+	<poi id="27" lane=":5/6_0_0" pos="0"/>
+	<poi id="28" lane=":8/5_0_0" pos="0"/>
+	<poi id="29" lane=":2/9_0_0" pos="0"/>
+	<poi id="30" lane=":5/9_0_0" pos="0"/>
+	<poi id="31" lane=":2/5_0_0" pos="0"/>
+	<poi id="32" lane=":6/9_0_0" pos="0"/>
+	<poi id="33" lane=":3/6_0_0" pos="0"/>
+	<poi id="34" lane=":5/6_0_0" pos="0"/>
+	<poi id="35" lane=":6/7_0_0" pos="0"/>
+	<poi id="36" lane=":5/1_0_0" pos="0"/>
+	<poi id="37" lane=":5/5_0_0" pos="0"/>
+	<poi id="38" lane=":1/9_0_0" pos="0"/>
+	<poi id="39" lane=":1/0_0_0" pos="0"/>
+	<poi id="40" lane=":8/2_0_0" pos="0"/>
+	<poi id="41" lane=":3/4_0_0" pos="0"/>
+	<poi id="42" lane=":8/5_0_0" pos="0"/>
+	<poi id="43" lane=":2/2_0_0" pos="0"/>
+	<poi id="44" lane=":9/7_0_0" pos="0"/>
+	<poi id="45" lane=":1/1_0_0" pos="0"/>
+	<poi id="46" lane=":6/2_0_0" pos="0"/>
+	<poi id="47" lane=":9/8_0_0" pos="0"/>
+	<poi id="48" lane=":6/0_0_0" pos="0"/>
+	<poi id="49" lane=":5/7_0_0" pos="0"/>
 </additional>
