@@ -3,7 +3,6 @@ package it.polito.appeal.traci.examples;
 import java.awt.Color;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +31,7 @@ public class Manhattan {
 
 		final Double CAR = Math.random() * 200;
 
-		final int STEPS = 1111;
+		final int STEPS = 10000;
 
 		final double DIST = 110;
 
@@ -64,9 +63,8 @@ public class Manhattan {
 				public void vehicleDeparted(Vehicle vehicle) {
 					try {
 						if (Integer.valueOf(vehicle.getID()).equals(CAR.intValue())) {
-							vehicle.changeColor(Color.YELLOW);
+							vehicle.changeColor(Color.PINK);
 						} else {
-							vehicle.changeSpeed(BigDecimal.ZERO.doubleValue());
 							vehicle.changeColor(Color.BLACK);
 						}
 					} catch (IOException e) {
