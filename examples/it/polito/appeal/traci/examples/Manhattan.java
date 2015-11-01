@@ -4,9 +4,13 @@ import java.awt.Color;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import it.polito.appeal.traci.Edge;
 import it.polito.appeal.traci.POI;
 import it.polito.appeal.traci.SumoTraciConnection;
 import it.polito.appeal.traci.Vehicle;
@@ -39,6 +43,10 @@ public class Manhattan {
 
 		Boolean found = false;
 
+		Edge target;
+
+		Boolean avaliated = false;
+
 		try {
 			conn.addOption("additional-files", "test/sumo_maps/manhattan/mini/additional.add.xml");
 			conn.addOption("gui-settings-file", "test/sumo_maps/manhattan/mini/gui-settings.cfg");
@@ -56,7 +64,7 @@ public class Manhattan {
 				}
 
 				@Override
-				public void vehicleTeleportEnding(Vehicle vehicle) {
+				public void vehicleTeleportEnding(Vehicle veqhicle) {
 				}
 
 				@Override
@@ -64,8 +72,22 @@ public class Manhattan {
 					try {
 						if (Integer.valueOf(vehicle.getID()).equals(CAR.intValue())) {
 							vehicle.changeColor(Color.PINK);
+
+							List<Edge> route = vehicle.getCurrentRoute();
+
+							Edge target = route.get(route.size() - 1);
+							System.out.println("Old target " + target.toString());
+
+							Object[] edges = conn.getEdgeRepository().getAll().values().toArray();
+
+							Edge newTarget = (Edge) edges[0];
+
+							vehicle.changeTarget(newTarget);
+							System.out.println("New target "
+									+ vehicle.getCurrentRoute().get(vehicle.getCurrentRoute().size() - 1));
+
 						} else {
-							vehicle.changeColor(Color.BLACK);
+							// vehicle.changeColor(Color.BLACK);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -92,34 +114,40 @@ public class Manhattan {
 
 				found = true;
 
-				for (POI poi : conn.getPOIRepository().getAll().values()) {
+				if (!avaliated) {
+					
+					avaliated = true;
 
-					double currDist = vehicle.getPosition().distance(poi.getPosition());
+					for (POI poi : conn.getPOIRepository().getAll().values()) {
 
-					Runtime.getRuntime().exec("python vagas.py 10").waitFor();
 
-					char[] vagasChar = new char[1];
-					FileReader reader = new FileReader(vagasFile);
-					reader.read(vagasChar);
-					reader.close();
+						double currDist = vehicle.getPosition().distance(poi.getPosition());
 
-					Integer vagasInt = Integer.valueOf(String.valueOf(vagasChar[0]));
+						Runtime.getRuntime().exec("python vagas.py 10").waitFor();
 
-					if (currDist <= DIST && vagasInt > 0) {
-						available.put(poi.getID(), vagasInt);
-						poi.changeColor(Color.GREEN);
+						char[] vagasChar = new char[1];
+						FileReader reader = new FileReader(vagasFile);
+						reader.read(vagasChar);
+						reader.close();
+
+						Integer vagasInt = Integer.valueOf(String.valueOf(vagasChar[0]));
+
+						if (currDist <= DIST && vagasInt > 0) {
+							available.put(poi.getID(), vagasInt);
+							poi.changeColor(Color.GREEN);
+						}
+						if (currDist > DIST && vagasInt > 0) {
+							available.remove(poi.getID());
+							poi.changeColor(Color.RED);
+						}
 					}
-					if (currDist > DIST && vagasInt > 0) {
-						available.remove(poi.getID());
-						poi.changeColor(Color.RED);
-					}
-				}
 
-				System.out.print("Parking lots available now: ");
-				for (Entry<String, Integer> poi : available.entrySet()) {
-					System.out.print(poi.getKey() + "(" + poi.getValue() + " vagas) ");
+					System.out.print("Parking lots available now: ");
+					for (Entry<String, Integer> poi : available.entrySet()) {
+						System.out.print(poi.getKey() + "(" + poi.getValue() + " vagas) ");
+					}
+					System.out.println();
 				}
-				System.out.println();
 			}
 
 		} catch (Exception e) {
