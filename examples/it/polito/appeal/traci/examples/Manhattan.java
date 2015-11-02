@@ -4,11 +4,9 @@ import java.awt.Color;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import it.polito.appeal.traci.Edge;
 import it.polito.appeal.traci.POI;
@@ -43,7 +41,7 @@ public class Manhattan {
 
 		Boolean found = false;
 
-		Edge target;
+		Edge target = null;
 
 		Boolean avaliated = false;
 
@@ -72,22 +70,6 @@ public class Manhattan {
 					try {
 						if (Integer.valueOf(vehicle.getID()).equals(CAR.intValue())) {
 							vehicle.changeColor(Color.PINK);
-
-							List<Edge> route = vehicle.getCurrentRoute();
-
-							Edge target = route.get(route.size() - 1);
-							System.out.println("Old target " + target.toString());
-
-							Object[] edges = conn.getEdgeRepository().getAll().values().toArray();
-
-							Edge newTarget = (Edge) edges[0];
-
-							vehicle.changeTarget(newTarget);
-							System.out.println("New target "
-									+ vehicle.getCurrentRoute().get(vehicle.getCurrentRoute().size() - 1));
-
-						} else {
-							// vehicle.changeColor(Color.BLACK);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -114,14 +96,43 @@ public class Manhattan {
 
 				found = true;
 
+				List<Edge> route = vehicle.getCurrentRoute();
+
+				target = route.get(route.size() - 1);
+
+				if (i == 20) {
+
+					System.out.println("Old target " + target.toString());
+
+					Object[] edges = conn.getEdgeRepository().getAll().values().toArray();
+
+					do {
+						int index = (int) (Math.random() * edges.length);
+
+						target = (Edge) edges[index];
+					} while (target.toString().contains("_"));
+
+					vehicle.changeTarget(target);
+					System.out.println(
+							"New target " + vehicle.getCurrentRoute().get(vehicle.getCurrentRoute().size() - 1));
+
+					avaliated = false;
+				}
+
 				if (!avaliated) {
-					
+
+					String endPoint = target.toString().split("to")[1];
+
+					double x = Integer.valueOf(endPoint.split("/")[0]) * 100;
+					double y = Integer.valueOf(endPoint.split("/")[1]) * 100;
+
+					System.out.println("x: " + x + ", y: " + y);
+
 					avaliated = true;
 
 					for (POI poi : conn.getPOIRepository().getAll().values()) {
 
-
-						double currDist = vehicle.getPosition().distance(poi.getPosition());
+						double currDist = poi.getPosition().distance(x, -y);
 
 						Runtime.getRuntime().exec("python vagas.py 10").waitFor();
 
@@ -142,11 +153,17 @@ public class Manhattan {
 						}
 					}
 
-					System.out.print("Parking lots available now: ");
-					for (Entry<String, Integer> poi : available.entrySet()) {
-						System.out.print(poi.getKey() + "(" + poi.getValue() + " vagas) ");
+					if (available.isEmpty()) {
+						double dist = 0;
+						System.out.println("No near parking lots available. The nearest one is " + String.format("%.2f", dist) + "m far");
+					} else {
+
+						System.out.print("Parking lots available near " + endPoint + " : ");
+						for (Entry<String, Integer> poi : available.entrySet()) {
+							System.out.print(poi.getKey() + "(" + poi.getValue() + " vagas) ");
+						}
+						System.out.println();
 					}
-					System.out.println();
 				}
 			}
 
