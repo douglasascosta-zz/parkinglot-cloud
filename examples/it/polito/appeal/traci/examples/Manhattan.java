@@ -3,11 +3,10 @@ package it.polito.appeal.traci.examples;
 import java.awt.Color;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import br.com.unicamp.parkinglot.ParkingLot;
 import it.polito.appeal.traci.Edge;
 import it.polito.appeal.traci.POI;
 import it.polito.appeal.traci.SumoTraciConnection;
@@ -29,31 +28,29 @@ public class Manhattan {
 
 		final SumoTraciConnection conn = new SumoTraciConnection("test/sumo_maps/manhattan/200_0.sumo.cfg", 12345);
 
-		final String vagasFile = "vagas.txt";
+		final String placesFile = "vagas.txt";
 
-		final Double CAR = Math.random() * 200;
-
-		final int STEPS = 10000;
+		final Integer vehicleId = new Double(Math.random() * 200).intValue();
 
 		final double DIST = 110;
 
-		Map<String, Integer> available = new HashMap<>();
-
-		Boolean found = false;
+		List<ParkingLot> available;
 
 		Edge target = null;
 
 		Boolean avaliated = false;
 
+		ParkingLot nearest = null;
+
 		try {
 			conn.addOption("additional-files", "test/sumo_maps/manhattan/mini/additional.add.xml");
 			conn.addOption("gui-settings-file", "test/sumo_maps/manhattan/mini/gui-settings.cfg");
 			conn.addOption("S", "true");
-			conn.addOption("Q", "true");
+//			conn.addOption("Q", "true");
 
 			conn.runServer(true);
 
-			System.out.println("Following car " + CAR.intValue());
+			System.out.println("Following vehicle " + vehicleId);
 
 			conn.addVehicleLifecycleObserver(new VehicleLifecycleObserver() {
 
@@ -68,7 +65,7 @@ public class Manhattan {
 				@Override
 				public void vehicleDeparted(Vehicle vehicle) {
 					try {
-						if (Integer.valueOf(vehicle.getID()).equals(CAR.intValue())) {
+						if (Integer.valueOf(vehicle.getID()).equals(vehicleId)) {
 							vehicle.changeColor(Color.PINK);
 						}
 					} catch (IOException e) {
@@ -81,26 +78,26 @@ public class Manhattan {
 				}
 			});
 
-			for (int i = 0; i < STEPS; i++) {
-
+			while (conn.getVehicleRepository().getByID(vehicleId.toString()) == null) {
+				System.out.println("Waiting for vehicle to appear...");
 				conn.nextSimStep();
+			}
 
-				Vehicle vehicle = conn.getVehicleRepository().getByID(CAR.intValue() + "");
-				if (vehicle == null) {
-					if (!found) {
-						System.out.println("Could not find vehicle");
-						continue;
-					}
-					break;
-				}
+			System.out.println("Vehicle found!");
 
-				found = true;
+			Vehicle vehicle;
+
+			while ((vehicle = conn.getVehicleRepository().getByID(vehicleId.toString())) != null) {
+
+				int step = conn.getCurrentSimTime() / 1000;
+
+				System.out.println("Step " + step);
 
 				List<Edge> route = vehicle.getCurrentRoute();
 
 				target = route.get(route.size() - 1);
 
-				if (i == 20) {
+				if (step % 40 == 0) {
 
 					System.out.println("Old target " + target.toString());
 
@@ -126,45 +123,55 @@ public class Manhattan {
 					double x = Integer.valueOf(endPoint.split("/")[0]) * 100;
 					double y = Integer.valueOf(endPoint.split("/")[1]) * 100;
 
-					System.out.println("x: " + x + ", y: " + y);
+					System.out.println("Destination: " + endPoint);
 
 					avaliated = true;
 
+					available = new ArrayList<ParkingLot>();
+
 					for (POI poi : conn.getPOIRepository().getAll().values()) {
 
-						double currDist = poi.getPosition().distance(x, -y);
+						Double currDist = poi.getPosition().distance(x, y);
 
 						Runtime.getRuntime().exec("python vagas.py 10").waitFor();
 
-						char[] vagasChar = new char[1];
-						FileReader reader = new FileReader(vagasFile);
-						reader.read(vagasChar);
+						char[] placesChar = new char[1];
+						FileReader reader = new FileReader(placesFile);
+						reader.read(placesChar);
 						reader.close();
 
-						Integer vagasInt = Integer.valueOf(String.valueOf(vagasChar[0]));
+						Integer placesInt = Integer.valueOf(String.valueOf(placesChar[0]));
 
-						if (currDist <= DIST && vagasInt > 0) {
-							available.put(poi.getID(), vagasInt);
+						ParkingLot currPl = new ParkingLot(poi.getID(), placesInt, currDist);
+
+						if (nearest == null || currDist < nearest.getDist()) {
+							nearest = currPl;
+						}
+
+						if (currDist <= DIST && placesInt > 0) {
+							available.add(currPl);
 							poi.changeColor(Color.GREEN);
 						}
-						if (currDist > DIST && vagasInt > 0) {
-							available.remove(poi.getID());
+						if (currDist > DIST && placesInt > 0) {
 							poi.changeColor(Color.RED);
 						}
 					}
 
 					if (available.isEmpty()) {
-						double dist = 0;
-						System.out.println("No near parking lots available. The nearest one is " + String.format("%.2f", dist) + "m far");
-					} else {
+						POI nearestPoi = conn.getPOIRepository().getByID(nearest.getId());
+						System.out.println("No near parking lots available. The nearest one is " + nearestPoi.getID()
+								+ " (" + nearest.getPlaces() + " places).");
 
+						nearestPoi.changeColor(Color.GREEN);
+					} else {
 						System.out.print("Parking lots available near " + endPoint + " : ");
-						for (Entry<String, Integer> poi : available.entrySet()) {
-							System.out.print(poi.getKey() + "(" + poi.getValue() + " vagas) ");
+						for (ParkingLot parkingLot : available) {
+							System.out.print(parkingLot.getId() + "(" + parkingLot.getPlaces() + " vagas) ");
 						}
 						System.out.println();
 					}
 				}
+				conn.nextSimStep();
 			}
 
 		} catch (Exception e) {

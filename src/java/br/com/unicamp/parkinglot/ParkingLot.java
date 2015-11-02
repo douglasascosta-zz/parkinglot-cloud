@@ -1,35 +1,35 @@
 package br.com.unicamp.parkinglot;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.Random;
-
 public class ParkingLot {
 
-	public static void main(String[] args) {
-		
-		int max = 10;
-		if (args.length > 0) {
-			try {
-				max = Integer.parseInt(args[0]);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		Random rdm = new Random();
-		int vagas = rdm.nextInt(max);
-		
-		
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter("vagas.txt");
-			writer.println(vagas);
-			writer.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println(vagas);
+	public ParkingLot(String id, Integer places, Double dist) {
+		this.id = id;
+		this.places = places;
+		this.dist = dist;
 	}
-
+	
+	private String id;
+	private Integer places;
+	private Double dist;
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Integer getPlaces() {
+		return places;
+	}
+	public void setPlaces(Integer places) {
+		this.places = places;
+	}
+	public Double getDist() {
+		return dist;
+	}
+	public void setDist(Double dist) {
+		this.dist = dist;
+	}
+	
+	
 }
